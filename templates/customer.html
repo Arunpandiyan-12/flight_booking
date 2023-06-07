@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Customer Home</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="text-align: center">Welcome, {{ username }}!</h1>
+      <h2>Available Flights</h2>
+      <table class="tabl">
+        <tr>
+          <th>Flight ID</th>
+          <th>Flight Name</th>
+          <th>Source</th>
+          <th>Destination</th>
+          <th>Departure Time</th>
+          <th>Arrival Time</th>
+          <th>Price</th>
+          <th>Book</th>
+        </tr>
+        {% for flight in flights %}
+        <tr>
+          <td>{{ flight[0] }}</td>
+          <td>{{ flight[1] }}</td>
+          <td>{{ flight[2] }}</td>
+          <td>{{ flight[3] }}</td>
+          <td>{{ flight[4] }}</td>
+          <td>{{ flight[5] }}</td>
+          <td>{{ flight[6] }}</td>
+          <td>
+            <form action="/book_flight" method="post">
+              <input type="hidden" name="flight_id" value="{{ flight[0] }}" />
+              <input type="hidden" name="username" value="{{ username }}" />
+              <input type="submit" value="Book  " />
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <form action="/my_bookings" method="post">
+        <input type="hidden" name="username" value="{{ username }}" />
+        <button>My Bookings</button>
+      </form>
+      <br />
+      <a href="/logout">Logout</a>
+    </div>
+  </body>
+</html>

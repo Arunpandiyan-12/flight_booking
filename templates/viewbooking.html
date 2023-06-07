@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flight Bookings</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Flight Bookings</h1>
+      <table class="tabl">
+        <tr>
+          <th>Booking ID</th>
+          <th>Username</th>
+          <th>Flight Name</th>
+          <th>Source</th>
+          <th>Destination</th>
+          <th>Departure Time</th>
+          <th>Arrival Time</th>
+          <th>Price</th>
+          <th>Cancel</th>
+        </tr>
+        {% for booking in bookings %}
+        <tr>
+          <td>{{ booking[0] }}</td>
+          <td>{{ booking[1] }}</td>
+          <td>{{ booking[2] }}</td>
+          <td>{{ booking[3] }}</td>
+          <td>{{ booking[4] }}</td>
+          <td>{{ booking[5] }}</td>
+          <td>{{ booking[6] }}</td>
+          <td>{{ booking[7] }}</td>
+          <td>
+            <form action="/cancel_flight" method="post">
+              <input type="hidden" name="flight_id" value="{{ booking[0] }}" />
+              <input type="hidden" name="username" value="{{ booking[1] }}" />
+              <input type="submit" value="Cancel  " />
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <a href="/admin">Back to Admin Page</a>
+      <br />
+      <a href="/logout">Logout</a>
+    </div>
+  </body>
+</html>

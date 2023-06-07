@@ -1,0 +1,108 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap'); */
+
+body {
+  font-family: 'Pacifico', cursive;
+ background-color: gray;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 2vh;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  width: 35vw;
+  width: fit-content;
+  padding: 3vw 10v;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+
+
+.ano {
+  padding: 1vw 6vw;
+  width: max-content;
+  margin: 9vw 0vw;
+}
+.tabl {
+  width: 60vw;
+}
+
+.contt {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+.cont {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  /* border: 2px solid grey; */
+}
+
+h1,
+h2 {
+  text-align: left;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #cccccc;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="datetime-local"],
+input[type="number"],
+input[type="submit"] {
+  width: 100%;
+  padding: 8px 0px 8px 8px;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+input[type="submit"] {
+  background-color: #112112;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+a {
+  color: #0000ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.rem {
+  background-color: rgb(193, 84, 84) !important;
+}

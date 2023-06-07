@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flight Booking System</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 style="text-align: center; padding: 0vw 0vw 2vw">
+        <u>Flight Booking System </u>
+      </h1>
+      <div class="cont">
+        <h2>Login</h2>
+        <div>
+          <form action="/login" method="post">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+            /><br /><br />
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+            /><br /><br />
+            <input type="submit" value="Login" />
+          </form>
+        </div>
+      </div>
+      <br />
+      <h1 style="font-size : 15px; padding-left: 50px: font-style: roboto;">dont have an account please Register and then login</h1>
+      <div class="cont">
+        <h2>Register</h2>
+        <form action="/register" method="post">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            required
+          /><br /><br />
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+          /><br /><br />
+          <input
+            style="background-color: #112112"
+            type="submit"
+            value="Register"
+          />
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
