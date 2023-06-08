@@ -206,20 +206,57 @@ def logout():
     return redirect('/')
 
 
+@app.route('/search_flights', methods=['POST'])
+def search_flights():
+    source = request.form['source']
+    destination = request.form['destination']
+    departure_date_str = request.form['departure_date']
+    departure_time_str = request.form['departure_time']
+
+    # Convert date and time strings to datetime objects
+    departure_date = datetime.strptime(departure_date_str, "%Y-%m-%d").date()
+    departure_time = datetime.strptime(departure_time_str, "%H:%M").time()
+
+    # Search for flights matching the criteria
+    query = "SELECT * FROM flights WHERE source = %s AND destination = %s AND DATE(departure_time) = %s AND TIME(departure_time) > %s"
+    values = (source, destination, departure_date, departure_time)
+    cursor.execute(query, values)
+    flights = cursor.fetchall()
+
+    return render_template('search_results.html', flights=flights)
+
+# Book flight based on availability
 @app.route('/book_flight', methods=['POST'])
 def book_flight_route():
     flight_id = request.form['flight_id']
     username = request.form['username']
 
+    # Check if the flight has available seats (assuming 60 as the default seat count)
+    query = "SELECT COUNT(*) FROM bookings WHERE flight_id = %s"
+    values = (flight_id,)
+    cursor.execute(query, values)
+    bookings_count = cursor.fetchone()[0]
+
+    if bookings_count >= 60:
+        return "No available seats on the selected flight."
+
+    # Check if the user has already booked the flight
+    query = "SELECT COUNT(*) FROM bookings WHERE flight_id = %s AND username = %s"
+    values = (flight_id, username)
+    cursor.execute(query, values)
+    booking_exists = cursor.fetchone()[0]
+
+    if booking_exists:
+        return "You have already booked this flight."
+
     # Insert booking details into the database
     query = "INSERT INTO bookings (flight_id, username) VALUES (%s, %s)"
     values = (flight_id, username)
-    try:
-        cursor.execute(query, values)
-        db.commit()
-    except Exception as e:
-        return str(e)
+    cursor.execute(query, values)
+    db.commit()
+
     return "Successfully booked flight"
+
 
 
 @app.route('/cancel_flight', methods=['POST'])

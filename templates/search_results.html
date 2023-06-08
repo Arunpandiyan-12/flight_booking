@@ -1,31 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Customer Home</title>
+    <title>Search Results</title>
     <link rel="stylesheet" href="/static/style.css" />
   </head>
   <body>
     <div class="container">
-      <h1 style="text-align: center">Welcome, {{ username }}!</h1>
-      
-      <h2>Search Flights</h2>
-      <form action="/search_flights" method="post">
-        <label for="source">Source:</label>
-        <input type="text" name="source" required /><br />
-        
-        <label for="destination">Destination:</label>
-        <input type="text" name="destination" required /><br />
-        
-        <label for="departure_date">Departure Date:</label>
-        <input type="date" name="departure_date" required /><br />
-        
-        <label for="departure_time">Departure Time:</label>
-        <input type="time" name="departure_time" required /><br />
-        
-        <input type="submit" value="Search Flights" />
-      </form>
-      
-      <h2>Available Flights</h2>
+      <h1>Search Results</h1>
+      {% if flights %}
       <table class="tabl">
         <tr>
           <th>Flight ID</th>
@@ -56,13 +38,14 @@
         </tr>
         {% endfor %}
       </table>
-      
+      {% else %}
+      <p>No flights found.</p>
+      {% endif %}
       <br />
       <form action="/my_bookings" method="post">
         <input type="hidden" name="username" value="{{ username }}" />
         <button class="button-86">My Bookings</button>
       </form>
-      
       <br />
       <a href="/logout">Logout</a>
     </div>
