@@ -4,63 +4,79 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# MySQL database connection
-db = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='Arun@1234',
-    database='flight_booking_system'
-)
 
-# Create cursor object to execute queries
-cursor = db.cursor()
+def connect_db():
+    # MySQL database connection
+    return mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='Arun@1234',
+        database='flight_booking_system'
+    )
 
-# Create database and tables if they don't exist
-try:
-    query = "create table if not exists users (username varchar(20) primary key, password varchar(20), type varchar(20))"
-    cursor.execute(query)
-except:
-    pass
-try:
-    query = "create table if not exists flights (flight_id varchar(20) primary key, flight_name varchar(20), source varchar(20), destination varchar(20), departure_time datetime, arrival_time datetime, price int)"
-    cursor.execute(query)
-except:
-    pass
-try:
-    query = "create table if not exists bookings (flight_id varchar(20), username varchar(20), primary key(flight_id, username))"
-    cursor.execute(query)
-except:
-    pass
+    # Create cursor object to execute queries
 
-# default values
-try:
-    query = "insert into users values('admin', 'admin', 'admin')"
-    cursor.execute(query)
-    db.commit()
-except:
-    pass
-try:
-    query = "insert into users values('user', 'user', 'customer')"
-    cursor.execute(query)
-    db.commit()
-except:
-    pass
 
-# add flights by default for debugging
-try:
-    query = "insert into flights values('1', 'Indigo', 'Delhi', 'Mumbai', '2023-06-09 01:21:00', '2023-06-10 01:21:00', 4000)"
-    cursor.execute(query)
-    db.commit()
-# except Exception as e:
-#   print(e)
-except:
-    pass
-try:
-    query = "insert into flights values('2', 'Air India', 'Delhi', 'Mumbai', '2021-05-01 14:00:00', '2021-05-01 16:00:00', 5000)"
-    cursor.execute(query)
-    db.commit()
-except:
-    pass
+def close_db(cursor, db):
+    cursor.close()
+    db.close()
+    return
+
+
+def initi():
+    conn = connect_db()
+    cursor = conn.cursor()
+    # Create database and tables if they don't exist
+    try:
+        query = "create table if not exists users (username varchar(20) primary key, password varchar(20), type varchar(20))"
+        cursor.execute(query)
+    except:
+        pass
+    try:
+        query = "create table if not exists flights (flight_id varchar(20) primary key, flight_name varchar(20), source varchar(20), destination varchar(20), departure_time datetime, arrival_time datetime, price int)"
+        cursor.execute(query)
+    except:
+        pass
+    try:
+        query = "create table if not exists bookings (flight_id varchar(20), username varchar(20), primary key(flight_id, username))"
+        cursor.execute(query)
+    except:
+        pass
+
+    # default values
+    try:
+        query = "insert into users values('admin', 'admin', 'admin')"
+        cursor.execute(query)
+        conn.commit()
+    except:
+        pass
+    try:
+        query = "insert into users values('user', 'user', 'customer')"
+        cursor.execute(query)
+        conn.commit()
+    except:
+        pass
+
+    # add flights by default for debugging
+    try:
+        query = "insert into flights values('1', 'Indigo', 'Delhi', 'Mumbai', '2023-06-09 01:21:00', '2023-06-10 01:21:00', 4000)"
+        cursor.execute(query)
+        conn.commit()
+    # except Exception as e:
+    #   print(e)
+    except:
+        pass
+    try:
+        query = "insert into flights values('2', 'Air India', 'Delhi', 'Mumbai', '2021-05-01 14:00:00', '2021-05-01 16:00:00', 5000)"
+        cursor.execute(query)
+        conn.commit()
+    except:
+        pass
+    close_db(cursor, conn)
+
+
+initi()
+
 # Home page
 
 
@@ -73,6 +89,9 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
+    conn = connect_db()
+    cursor = conn.cursor()
+
     username = request.form['username']
     password = request.form['password']
 
@@ -81,6 +100,7 @@ def login():
     values = (username, password)
     cursor.execute(query, values)
     user = cursor.fetchone()
+    close_db(cursor, conn)
 
     if user:
         user_type = user[2]
@@ -97,6 +117,8 @@ def login():
 
 @app.route('/register', methods=['POST'])
 def register():
+    conn = connect_db()
+    cursor = conn.cursor()
     username = request.form['username']
     password = request.form['password']
 
@@ -108,14 +130,16 @@ def register():
 
     if user:
         # Username is already taken
+        close_db(cursor, conn)
         return redirect('/')
 
     # Register the user
     query = "INSERT INTO users (username, password, type) VALUES (%s, %s, 'customer')"
     values = (username, password)
     cursor.execute(query, values)
-    db.commit()
+    conn.commit()
 
+    close_db(cursor, conn)
     return redirect('/')
 
 # Admin page
@@ -123,11 +147,13 @@ def register():
 
 @app.route('/admin')
 def admin():
+    conn = connect_db()
+    cursor = conn.cursor()
     # Fetch flights from the database
     query = "SELECT * FROM flights"
     cursor.execute(query)
     flights = cursor.fetchall()
-
+    close_db(cursor, conn)
     return render_template('admin.html', flights=flights)
 
 # Add flight
@@ -135,6 +161,8 @@ def admin():
 
 @app.route('/add_flight', methods=['POST'])
 def add_flight_route():
+    conn = connect_db()
+    cursor = conn.cursor()
     flight_id = request.form['flight_id']
     flight_name = request.form['flight_name']
     source = request.form['source']
@@ -154,7 +182,8 @@ def add_flight_route():
     values = (flight_id, flight_name, source, destination,
               departure_time, arrival_time, price)
     cursor.execute(query, values)
-    db.commit()
+    conn.commit()
+    close_db(cursor, conn)
 
     return redirect('/admin')
 
@@ -163,14 +192,16 @@ def add_flight_route():
 
 @app.route('/remove_flight', methods=['POST'])
 def remove_flight_route():
+    conn = connect_db()
+    cursor = conn.cursor()
     flight_id = request.form['flight_id']
 
     # Delete the flight from the database
     query = "DELETE FROM flights WHERE flight_id = %s"
     values = (flight_id,)
     cursor.execute(query, values)
-    db.commit()
-
+    conn.commit()
+    close_db(cursor, conn)
     return redirect('/admin')
 
 # Customer page
@@ -178,6 +209,8 @@ def remove_flight_route():
 
 @app.route('/my_bookings', methods=['POST'])
 def my_bookings():
+    conn = connect_db()
+    cursor = conn.cursor()
     username = request.form['username']
 
     # Fetch bookings from the database
@@ -185,16 +218,20 @@ def my_bookings():
     values = (username,)
     cursor.execute(query, values)
     bookings = cursor.fetchall()
+    close_db(cursor, conn)
 
     return render_template('mybooking.html', bookings=bookings, username=username)
 
 
 @app.route('/customer/<username>')
 def customer(username):
+    conn = connect_db()
+    cursor = conn.cursor()
     # Fetch flights from the database
     query = "SELECT * FROM flights"
     cursor.execute(query)
     flights = cursor.fetchall()
+    close_db(cursor, conn)
 
     return render_template('customer.html', flights=flights, username=username)
 
@@ -203,11 +240,14 @@ def customer(username):
 
 @app.route('/logout', methods=['GET'])
 def logout():
+
     return redirect('/')
 
 
 @app.route('/search_flights', methods=['POST'])
 def search_flights():
+    conn = connect_db()
+    cursor = conn.cursor()
     source = request.form['source']
     destination = request.form['destination']
     departure_date_str = request.form['departure_date']
@@ -222,12 +262,17 @@ def search_flights():
     values = (source, destination, departure_date, departure_time)
     cursor.execute(query, values)
     flights = cursor.fetchall()
+    close_db(cursor, conn)
 
     return render_template('search_results.html', flights=flights)
 
 # Book flight based on availability
+
+
 @app.route('/book_flight', methods=['POST'])
 def book_flight_route():
+    conn = connect_db()
+    cursor = conn.cursor()
     flight_id = request.form['flight_id']
     username = request.form['username']
 
@@ -238,6 +283,7 @@ def book_flight_route():
     bookings_count = cursor.fetchone()[0]
 
     if bookings_count >= 60:
+        close_db(cursor, conn)
         return "No available seats on the selected flight."
 
     # Check if the user has already booked the flight
@@ -247,20 +293,22 @@ def book_flight_route():
     booking_exists = cursor.fetchone()[0]
 
     if booking_exists:
+        close_db(cursor, conn)
         return "You have already booked this flight."
 
     # Insert booking details into the database
     query = "INSERT INTO bookings (flight_id, username) VALUES (%s, %s)"
     values = (flight_id, username)
     cursor.execute(query, values)
-    db.commit()
-
+    conn.commit()
+    close_db(cursor, conn)
     return "Successfully booked flight"
-
 
 
 @app.route('/cancel_flight', methods=['POST'])
 def cancel_flight_route():
+    conn = connect_db()
+    cursor = conn.cursor()
     flight_id = request.form['flight_id']
     username = request.form['username']
 
@@ -269,21 +317,24 @@ def cancel_flight_route():
     values = (flight_id, username)
     try:
         cursor.execute(query, values)
-        db.commit()
+        conn.commit()
     except Exception as e:
         return str(e)
+    close_db(cursor, conn)
     return "Successfully cancelled flight"
 
 
 @app.route('/view_bookings')
 def view_bookings():
+    conn = connect_db()
+    cursor = conn.cursor()
     flight_id = request.args.get('flight_id')
     # Fetch bookings from the database
     query = "SELECT * FROM bookings as b, flights as f WHERE b.flight_id = f.flight_id AND b.flight_id = %s"
     values = (flight_id,)
     cursor.execute(query, values)
     bookings = cursor.fetchall()
-
+    close_db(cursor, conn)
     return render_template('viewbooking.html', bookings=bookings)
 
 
